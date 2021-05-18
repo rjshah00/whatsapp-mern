@@ -4,6 +4,25 @@ import Messages from "./dbMessages.js";
 import bodyparser from "body-parser";
 import Pusher from "pusher";
 
+const db = mongoose.connection;
+db.once("open", () => {
+	console.log("db is connected");
+	const msgCollection = db.collection("messagecontents");
+	const changeStream = msgCollection.watch();
+	changeStream.on("change", (change) => {
+		console.log(change);
+		if (change.operationType === "insert") {
+			const messageDetails = change.fullDocument;
+			pusher.trigger("messages", "inserted", {
+				name: messageDetails.name,
+				message: messageDetails.message,
+			});
+		} else {
+			console.log("Error on trigerring pusher");
+		}
+	});
+});
+
 const app = express();
 const port = 9000;
 const connection_url =
@@ -18,11 +37,12 @@ const pusher = new Pusher({
 	useTLS: true,
 });
 
-pusher.trigger("my-channel", "my-event", {
-	message: "hello world",
-});
-
 app.use(bodyparser.json());
+app.use((req, res, next) => {
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Acces-Control-Allow-Headers", "*");
+	next();
+});
 mongoose
 	.connect(connection_url, {
 		useCreateIndex: true,
@@ -30,7 +50,6 @@ mongoose
 		useUnifiedTopology: true,
 	})
 	.then((data) => {
-		console.log("mongoose connected");
 		app.listen(port, () => console.log(`listenning on post - ${port}`));
 	})
 	.catch((err) => {
