@@ -8,4 +8,18 @@ const whatsappSchema = mongoose.Schema({
 	received: Boolean,
 });
 
+const roomSchema = mongoose.Schema({
+	name: String,
+	lastmsg: String,
+});
+
+const userSchema = mongoose.Schema({
+	name: String,
+	imageurl: String,
+	password: String,
+});
+
+export const userDetails = mongoose.model("usercontent", userSchema);
+export const roomDetails = mongoose.model("roomcontent", roomSchema);
+
 export default mongoose.model("messagecontents", whatsappSchema);

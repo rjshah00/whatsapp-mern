@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import Messages from "./dbMessages.js";
+import Messages, { userDetails, roomDetails } from "./dbMessages.js";
 import bodyparser from "body-parser";
 import Pusher from "pusher";
 import cors from "cors";
@@ -9,8 +9,10 @@ const db = mongoose.connection;
 db.once("open", () => {
 	console.log("db is connected");
 	const msgCollection = db.collection("messagecontents");
-	const changeStream = msgCollection.watch();
-	changeStream.on("change", (change) => {
+	const userCollection = db.collection("usercontents");
+	const roomCollection = db.collection("roomcontents");
+	const changeStream_msg = msgCollection.watch();
+	changeStream_msg.on("change", (change) => {
 		console.log(change);
 		if (change.operationType === "insert") {
 			const messageDetails = change.fullDocument;
@@ -24,12 +26,38 @@ db.once("open", () => {
 			console.log("Error on trigerring pusher");
 		}
 	});
+	const changeStream_user = userCollection.watch();
+	changeStream_user.on("change", (change) => {
+		console.log(change);
+		if (change.operationType === "insert") {
+			const userDetails = change.fullDocument;
+			pusher.trigger("users", "inserted", {
+				name: userDetails.name,
+				imageurl: userDetails.imageurl,
+				password: userDetails.password,
+			});
+		} else {
+			console.log("Error on trigerring pusher");
+		}
+	});
+	const changeStream_room = roomCollection.watch();
+	changeStream_room.on("change", (change) => {
+		console.log(change);
+		if (change.operationType === "insert") {
+			const roomDetails = change.fullDocument;
+			pusher.trigger("rooms", "inserted", {
+				name: roomDetails.name,
+				lastmsg: roomDetails.lastmsg,
+			});
+		} else {
+			console.log("Error on trigerring pusher");
+		}
+	});
 });
 
 const app = express();
 const port = process.env.PORT || 9000;
 const connection_url =
-	// "mongodb+srv://admin:MnFP9jpVezqESL6Y@cluster0.ftorg.mongodb.net/whatsappdb?retryWrites=true&w=majority";
 	"mongodb://admin:MnFP9jpVezqESL6Y@cluster0-shard-00-00.ftorg.mongodb.net:27017,cluster0-shard-00-01.ftorg.mongodb.net:27017,cluster0-shard-00-02.ftorg.mongodb.net:27017/wtsapdb?ssl=true&replicaSet=atlas-vy5a7h-shard-0&authSource=admin&retryWrites=true&w=majority";
 
 const pusher = new Pusher({
@@ -57,6 +85,28 @@ mongoose
 	});
 
 app.get("/", (req, res) => res.status(200).send("Hello Raj"));
+
+app.get("/users/sync", (req, res) => {
+	userDetails.find((err, data) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(data);
+		}
+	});
+});
+app.post("/user/new", (req, res) => {
+	const dbUser = req.body;
+	userDetails.create(dbUser, (err, data) => {
+		if (err) {
+			console.log(err);
+			res.status(500).send(err);
+		} else {
+			res.status(201).send(`new message created \n ${data}`);
+		}
+	});
+});
+
 app.get("/messages/sync", (req, res) => {
 	Messages.find((err, data) => {
 		if (err) {
@@ -79,6 +129,26 @@ app.post("/message/new", (req, res) => {
 	});
 });
 
+app.get("/rooms/sync", (req, res) => {
+	roomDetails.find((err, data) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(data);
+		}
+	});
+});
+app.post("/room/new", (req, res) => {
+	const dbRoom = req.body;
+	roomDetails.create(dbRoom, (err, data) => {
+		if (err) {
+			console.log(err);
+			res.status(500).send(err);
+		} else {
+			res.status(201).send(`new message created \n ${data}`);
+		}
+	});
+});
 // {
 //     "message":"hhdhweakjsbkdhjbfas",
 //     "name" : "Raj SHah",

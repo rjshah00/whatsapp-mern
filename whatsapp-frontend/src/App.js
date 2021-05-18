@@ -4,12 +4,19 @@ import Chat from "./Chat";
 import Pusher from "pusher-js";
 import { useEffect, useState } from "react";
 import axios from "./axios";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import LoginComponent from "./LoginComponent";
+import { useStateValue } from "./StateProvider";
 
 function App() {
 	const [messages, setMessages] = useState([]);
+	const [rooms, setRooms] = useState([]);
 	useEffect(() => {
 		axios.get("/messages/sync").then((response) => {
 			setMessages(response.data);
+		});
+		axios.get("/rooms/sync").then((response) => {
+			setRooms(response.data);
 		});
 	}, []);
 	useEffect(() => {
@@ -21,20 +28,38 @@ function App() {
 		channel.bind("inserted", function (newMessage) {
 			setMessages([...messages, newMessage]);
 		});
+		const channel_room = pusher.subscribe("rooms");
+		channel_room.bind("inserted", function (newRoom) {
+			setRooms([...rooms, newRoom]);
+		});
 		return () => {
 			channel.unbind_all();
 			channel.unsubscribe();
+			channel_room.unbind_all();
+			channel_room.unsubscribe();
 		};
-	}, [messages]);
-	console.log(messages);
+	}, [messages, rooms]);
+	const [{ user }, dispatch] = useStateValue();
+
 	return (
 		<div className="app">
-			<div className="app__body">
-				{/* sidebar component */}
-				<Sidebar />
-				{/* chat component */}
-				<Chat messages={messages} />
-			</div>
+			{!user ? (
+				<LoginComponent />
+			) : (
+				<div className="app__body">
+					<Router>
+						<Sidebar rooms={rooms} />
+						<Switch>
+							<Route path="/rooms/:roomId">
+								{/* sidebar component */}
+								{/* chat component */}
+								<Chat messages={messages} />
+							</Route>
+							<Route path="/"></Route>
+						</Switch>
+					</Router>
+				</div>
+			)}
 		</div>
 	);
 }

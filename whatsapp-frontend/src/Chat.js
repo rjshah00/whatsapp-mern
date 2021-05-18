@@ -1,5 +1,5 @@
 import { Avatar, IconButton } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Chat.css";
 import SearchOutlinedIcon from "@material-ui/icons/SearchOutlined";
 import AttachFileOutlinedIcon from "@material-ui/icons/AttachFileOutlined";
@@ -7,8 +7,31 @@ import MoreVertOutlinedIcon from "@material-ui/icons/MoreVertOutlined";
 import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
 import MicIcon from "@material-ui/icons/Mic";
 import axios from "./axios.js";
+import { useParams } from "react-router-dom";
 
 function Chat({ messages }) {
+	const [seed, setSeed] = useState("");
+	const { roomId } = useParams();
+	const [roomName, setRoomName] = useState("");
+	useEffect(() => {
+		setSeed(Math.floor(Math.random() * 5000));
+	}, []);
+	useEffect(() => {
+		if (roomId) {
+			axios.get("/rooms/sync").then((response) => {
+				for (
+					let index = 0;
+					index < Object.keys(response).length - 2;
+					index++
+				) {
+					if (response.data[index]._id === roomId) {
+						setRoomName(response.data[index].name);
+					}
+				}
+			});
+		}
+		setRoomName("");
+	}, [roomId]);
 	const [input, setInput] = useState("");
 	const sendMessage = async (e) => {
 		e.preventDefault();
@@ -23,9 +46,11 @@ function Chat({ messages }) {
 	return (
 		<div className="chat">
 			<div className="chat__header">
-				<Avatar />
+				<Avatar
+					src={`https://avatars.dicebear.com/api/human/${seed}.svg`}
+				/>
 				<div className="chat__headerinfo">
-					<h3>Room Nmae</h3>
+					<h3>{roomName}</h3>
 					<p>last seen</p>
 				</div>
 				<div className="chat__headerRight">
