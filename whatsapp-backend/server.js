@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import Messages from "./dbMessages.js";
 import bodyparser from "body-parser";
 import Pusher from "pusher";
+import cors from "cors";
 
 const db = mongoose.connection;
 db.once("open", () => {
@@ -16,6 +17,8 @@ db.once("open", () => {
 			pusher.trigger("messages", "inserted", {
 				name: messageDetails.name,
 				message: messageDetails.message,
+				timestamp: messageDetails.timestamp,
+				received: messageDetails.received,
 			});
 		} else {
 			console.log("Error on trigerring pusher");
@@ -24,7 +27,7 @@ db.once("open", () => {
 });
 
 const app = express();
-const port = 9000;
+const port = process.env.PORT || 9000;
 const connection_url =
 	// "mongodb+srv://admin:MnFP9jpVezqESL6Y@cluster0.ftorg.mongodb.net/whatsappdb?retryWrites=true&w=majority";
 	"mongodb://admin:MnFP9jpVezqESL6Y@cluster0-shard-00-00.ftorg.mongodb.net:27017,cluster0-shard-00-01.ftorg.mongodb.net:27017,cluster0-shard-00-02.ftorg.mongodb.net:27017/wtsapdb?ssl=true&replicaSet=atlas-vy5a7h-shard-0&authSource=admin&retryWrites=true&w=majority";
@@ -38,11 +41,8 @@ const pusher = new Pusher({
 });
 
 app.use(bodyparser.json());
-app.use((req, res, next) => {
-	res.setHeader("Access-Control-Allow-Origin", "*");
-	res.setHeader("Acces-Control-Allow-Headers", "*");
-	next();
-});
+app.use(cors());
+
 mongoose
 	.connect(connection_url, {
 		useCreateIndex: true,
