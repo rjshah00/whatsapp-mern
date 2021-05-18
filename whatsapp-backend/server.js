@@ -33,7 +33,7 @@ db.once("open", () => {
 			const userDetails = change.fullDocument;
 			pusher.trigger("users", "inserted", {
 				name: userDetails.name,
-				imageurl: userDetails.imageurl,
+				email: userDetails.email,
 				password: userDetails.password,
 			});
 		} else {
@@ -48,6 +48,12 @@ db.once("open", () => {
 			pusher.trigger("rooms", "inserted", {
 				name: roomDetails.name,
 				lastmsg: roomDetails.lastmsg,
+				messages: {
+					message: "String",
+					name: "String",
+					timestamp: "String",
+					received: "Boolean",
+				},
 			});
 		} else {
 			console.log("Error on trigerring pusher");
@@ -107,16 +113,6 @@ app.post("/user/new", (req, res) => {
 	});
 });
 
-app.get("/messages/sync", (req, res) => {
-	Messages.find((err, data) => {
-		if (err) {
-			res.status(500).send(err);
-		} else {
-			res.status(200).send(data);
-		}
-	});
-});
-
 app.post("/message/new", (req, res) => {
 	const dbMessage = req.body;
 	Messages.create(dbMessage, (err, data) => {
@@ -125,6 +121,21 @@ app.post("/message/new", (req, res) => {
 			res.status(500).send(err);
 		} else {
 			res.status(201).send(`new message created \n ${data}`);
+		}
+	});
+});
+
+app.param("roomId", function (req, res, next, roomId) {
+	req.roomId = roomId;
+	next();
+});
+
+app.get("/messages/sync/:roomId", (req, res) => {
+	Messages.find({ roomId: req.roomId }, (err, data) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(data);
 		}
 	});
 });
@@ -138,8 +149,11 @@ app.get("/rooms/sync", (req, res) => {
 		}
 	});
 });
+
 app.post("/room/new", (req, res) => {
+	console.log("hello");
 	const dbRoom = req.body;
+	console.log(dbRoom);
 	roomDetails.create(dbRoom, (err, data) => {
 		if (err) {
 			console.log(err);
@@ -149,9 +163,3 @@ app.post("/room/new", (req, res) => {
 		}
 	});
 });
-// {
-//     "message":"hhdhweakjsbkdhjbfas",
-//     "name" : "Raj SHah",
-//     "timestamp": "EEWRERRRREWRREWREW",
-//     "received":true
-// }

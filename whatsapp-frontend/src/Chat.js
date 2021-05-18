@@ -8,14 +8,39 @@ import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
 import MicIcon from "@material-ui/icons/Mic";
 import axios from "./axios.js";
 import { useParams } from "react-router-dom";
+import { useStateValue } from "./StateProvider";
+import Pusher from "pusher-js";
 
 function Chat({ messages }) {
 	const [seed, setSeed] = useState("");
 	const { roomId } = useParams();
 	const [roomName, setRoomName] = useState("");
+	const [newMessages, setnewMessages] = useState([]);
+	const [{ user }] = useStateValue();
+
 	useEffect(() => {
-		setSeed(Math.floor(Math.random() * 5000));
-	}, []);
+		axios.get("/messages/sync/:roomId").then((response) => {
+			setnewMessages(...newMessages, response.data);
+		});
+	}, [roomId]);
+	console.log("helo", newmessages);
+
+	useEffect(() => {
+		const pusher = new Pusher("64332a0b8c2da2b804a9", {
+			cluster: "ap2",
+		});
+
+		const channel = pusher.subscribe("messages");
+		channel.bind("inserted", function (newMessage) {
+			setMessages([...messages, newMessage]);
+		});
+
+		return () => {
+			channel.unbind_all();
+			channel.unsubscribe();
+		};
+	}, [messages, roomId]);
+
 	useEffect(() => {
 		if (roomId) {
 			axios.get("/rooms/sync").then((response) => {
@@ -37,9 +62,10 @@ function Chat({ messages }) {
 		e.preventDefault();
 		await axios.post("/message/new", {
 			message: input,
-			name: "Raj Shah",
+			name: user.name,
 			timestamp: "Just Now",
 			received: false,
+			roomId: roomId,
 		});
 		setInput("");
 	};

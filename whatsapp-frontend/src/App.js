@@ -12,9 +12,6 @@ function App() {
 	const [messages, setMessages] = useState([]);
 	const [rooms, setRooms] = useState([]);
 	useEffect(() => {
-		axios.get("/messages/sync").then((response) => {
-			setMessages(response.data);
-		});
 		axios.get("/rooms/sync").then((response) => {
 			setRooms(response.data);
 		});
@@ -39,7 +36,7 @@ function App() {
 			channel_room.unsubscribe();
 		};
 	}, [messages, rooms]);
-	const [{ user }, dispatch] = useStateValue();
+	const [{ user }] = useStateValue();
 
 	return (
 		<div className="app">

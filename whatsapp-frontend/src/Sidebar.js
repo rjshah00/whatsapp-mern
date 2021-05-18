@@ -7,12 +7,14 @@ import { Avatar, IconButton } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import SidebarChat from "./SidebarChat.js";
 import "./Sidebar.css";
+import { useStateValue } from "./StateProvider";
 
 function Sidebar({ rooms }) {
+	const [{ user }] = useStateValue();
 	return (
 		<div className="sidebar">
 			<div className="sidebar__header">
-				<Avatar src="https://cdn4.vectorstock.com/i/1000x1000/06/18/male-avatar-profile-picture-vector-10210618.jpg" />
+				<Avatar src={user?.photoURL} />
 				<div className="sidebar__headerRight">
 					<IconButton>
 						<DonutLargeIcon />
