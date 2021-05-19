@@ -15,10 +15,7 @@ function App() {
 		axios.get("/rooms/sync").then((response) => {
 			setRooms(response.data);
 		});
-		axios.get("/messages/sync").then((response) => {
-			setRooms(response.data);
-		});
-	}, [rooms, messages]);
+	}, []);
 	useEffect(() => {
 		const pusher = new Pusher("64332a0b8c2da2b804a9", {
 			cluster: "ap2",

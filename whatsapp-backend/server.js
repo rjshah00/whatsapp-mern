@@ -135,6 +135,19 @@ app.get("/messages/sync/:roomId", (req, res) => {
 	});
 });
 
+app.get("/messages/sync/desc/:roomId", (req, res) => {
+	Messages.find({ roomId: req.roomId })
+		.sort({ timestamp: -1 })
+		.limit(1)
+		.exec(function (err, data) {
+			if (err) {
+				res.status(500).send(err);
+			} else {
+				res.status(200).send(data);
+			}
+		});
+});
+
 app.get("/messages/sync", (req, res) => {
 	Messages.find((err, data) => {
 		if (err) {

@@ -85,10 +85,8 @@ function Chat({ messages }) {
 				<div className="chat__headerinfo">
 					<h3>{roomName}</h3>
 					<p>
-						last seen at
-						{/* {messages
-							? messages[messages.length - 1]?.timestamp
-							: newMessages[newMessages.length - 1]?.timestamp} */}
+						last seen at &nbsp;
+						{newMessages[newMessages.length - 1]?.timestamp}
 					</p>
 				</div>
 				<div className="chat__headerRight">

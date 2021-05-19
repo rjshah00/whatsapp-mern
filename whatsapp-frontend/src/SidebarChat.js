@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import "./SidebarChat.css";
 import axios from "./axios";
 import { Link } from "react-router-dom";
-function SidebarChat({ addnewChat, name, lastmsg, id }) {
+function SidebarChat({ addnewChat, id, name }) {
 	const [seed, setSeed] = useState("");
+	const [lastmessage, setLastmessage] = useState("");
 	const createChat = async (e) => {
 		const roomName = prompt("Please enter a name for chat : ");
 		if (roomName) {
@@ -16,8 +17,20 @@ function SidebarChat({ addnewChat, name, lastmsg, id }) {
 		}
 	};
 	useEffect(() => {
-		setSeed(Math.floor(Math.random() * 5000));
+		if (id) {
+			console.log(id);
+			axios.get(`/messages/sync/desc/${id}`).then((response) => {
+				if (response) {
+					setLastmessage(response.data[0].message);
+				} else {
+					setLastmessage("");
+				}
+			});
+		}
 	}, [id]);
+	useEffect(() => {
+		setSeed(Math.floor(Math.random() * 5000));
+	}, []);
 	return !addnewChat ? (
 		<Link to={`/rooms/${id}`}>
 			<div className="sidebarChat">
@@ -26,7 +39,7 @@ function SidebarChat({ addnewChat, name, lastmsg, id }) {
 				/>
 				<div className="sidebarChat__info">
 					<h2>{name}</h2>
-					<p>{lastmsg}</p>
+					<p>{lastmessage}</p>
 				</div>
 			</div>
 		</Link>

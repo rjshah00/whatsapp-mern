@@ -18,3 +18,12 @@
 .sidebarChat__info {
 	margin-left: 15px;
 }
+
+a {
+	text-decoration: none !important;
+	color: #111;
+}
+
+.sidebarChat__info > p {
+	color: gray;
+}
