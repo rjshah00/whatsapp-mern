@@ -60,16 +60,19 @@ db.once("open", () => {
 
 const app = express();
 const port = process.env.PORT || 9000;
-const connection_url =
-	"mongodb://admin:MnFP9jpVezqESL6Y@cluster0-shard-00-00.ftorg.mongodb.net:27017,cluster0-shard-00-01.ftorg.mongodb.net:27017,cluster0-shard-00-02.ftorg.mongodb.net:27017/wtsapdb?ssl=true&replicaSet=atlas-vy5a7h-shard-0&authSource=admin&retryWrites=true&w=majority";
 
-const pusher = new Pusher({
-	appId: "1205458",
-	key: "64332a0b8c2da2b804a9",
-	secret: "4f42df27c3f16aad5e8c",
-	cluster: "ap2",
-	useTLS: true,
-});
+//here change <password> to password of your mongoDB cluster
+const connection_url =
+	"mongodb://admin:<password>@cluster0-shard-00-00.ftorg.mongodb.net:27017,cluster0-shard-00-01.ftorg.mongodb.net:27017,cluster0-shard-00-02.ftorg.mongodb.net:27017/wtsapdb?ssl=true&replicaSet=atlas-vy5a7h-shard-0&authSource=admin&retryWrites=true&w=majority";
+
+//here cut and paste code from your pusher cluster
+// const pusher = new Pusher({
+// 	appId: "",
+// 	key: "",
+// 	secret: "",
+// 	cluster: "",
+// 	useTLS: ,
+// });
 
 app.use(bodyparser.json());
 app.use(cors());
@@ -87,7 +90,7 @@ mongoose
 		console.log(err);
 	});
 
-app.get("/", (req, res) => res.status(200).send("Hello Raj"));
+app.get("/", (req, res) => res.status(200).send("Hello From Server"));
 
 app.get("/users/sync", (req, res) => {
 	userDetails.find((err, data) => {

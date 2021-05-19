@@ -1,5 +1,6 @@
 import firebase from "firebase";
 
+//here add your firebaseconfig from your ptoject
 const firebaseConfig = {
 	apiKey: "AIzaSyBbYw4Uvd_5vZ9yUVGKhi5GwjUANovBogo",
 	authDomain: "whatsapp-mern-94ad6.firebaseapp.com",
