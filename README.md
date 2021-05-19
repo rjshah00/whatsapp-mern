@@ -3,7 +3,7 @@
 
 <a href="https://reactjs.org/"><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--54ca_F2q--/c_imagga_scale,f_auto,fl_progressive,h_900,q_auto,w_1600/https://dev-to-uploads.s3.amazonaws.com/i/1wwdyw5de8avrdkgtz5n.png" width=80 height=60></a>
 <a href="https://www.google.com/aclk?sa=l&ai=DChcSEwjf1Ya69tXwAhUSrpYKHQx5AvgYABAAGgJ0bA&ae=2&sig=AOD64_24ZP4XXPF82bBdIvUlRLwms4YxMg&q&adurl&ved=2ahUKEwif_f259tXwAhUOWCsKHcBCBEQQ0Qx6BAgCEAE"><img src="https://webassets.mongodb.com/_com_assets/cms/MongoDB_Logo_FullColorBlack_RGB-4td3yuxzjs.png" width=200 height=60></a>
-<a href="https://pusher.com/"><img src=" https://upload.wikimedia.org/wikipedia/commons/1/1c/PUSHER.png" width=200 height=80></a>
+<a href="https://pusher.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/1/1c/PUSHER.png" width=200 height=80></a>
    
 <a href="https://firebase.google.com/"><img src="https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png" width=80 height=80></a>
   
@@ -13,8 +13,8 @@
 
 </div>
 
-<h1 align = 'center'><b>MovieApp</b></h1> 
-
+<h1 align = 'center'><b>Whatsapp Clone</b></h1> 
+<img src="https://assets.stickpng.com/images/580b57fcd9996e24bc43c543.png" alt="" height=500 width=500>
 ## Description ##
 <p>
   I have tried to build a app that can be used by users to chat or converstaions 
