@@ -5,7 +5,6 @@ import axios from "./axios";
 import { Link } from "react-router-dom";
 function SidebarChat({ addnewChat, name, lastmsg, id }) {
 	const [seed, setSeed] = useState("");
-
 	const createChat = async (e) => {
 		const roomName = prompt("Please enter a name for chat : ");
 		if (roomName) {
@@ -18,7 +17,7 @@ function SidebarChat({ addnewChat, name, lastmsg, id }) {
 	};
 	useEffect(() => {
 		setSeed(Math.floor(Math.random() * 5000));
-	}, []);
+	}, [id]);
 	return !addnewChat ? (
 		<Link to={`/rooms/${id}`}>
 			<div className="sidebarChat">

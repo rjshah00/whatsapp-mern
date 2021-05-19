@@ -8,9 +8,9 @@ import ChatIcon from "@material-ui/icons/Chat";
 import SidebarChat from "./SidebarChat.js";
 import "./Sidebar.css";
 import { useStateValue } from "./StateProvider";
-
 function Sidebar({ rooms }) {
 	const [{ user }] = useStateValue();
+
 	return (
 		<div className="sidebar">
 			<div className="sidebar__header">

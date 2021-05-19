@@ -19,11 +19,14 @@ function Chat({ messages }) {
 	const [{ user }] = useStateValue();
 
 	useEffect(() => {
-		axios.get("/messages/sync/:roomId").then((response) => {
-			setnewMessages(...newMessages, response.data);
-		});
+		const unsubscribe = axios
+			.get(`/messages/sync/${roomId}`)
+			.then((response) => {
+				setnewMessages(response.data);
+			});
+		setSeed(Math.floor(Math.random() * 5000));
+		return unsubscribe;
 	}, [roomId]);
-	console.log("helo", newmessages);
 
 	useEffect(() => {
 		const pusher = new Pusher("64332a0b8c2da2b804a9", {
@@ -32,43 +35,47 @@ function Chat({ messages }) {
 
 		const channel = pusher.subscribe("messages");
 		channel.bind("inserted", function (newMessage) {
-			setMessages([...messages, newMessage]);
+			setnewMessages([...newMessages, newMessage]);
 		});
 
 		return () => {
 			channel.unbind_all();
 			channel.unsubscribe();
 		};
-	}, [messages, roomId]);
+	}, [messages, newMessages, roomId]);
 
 	useEffect(() => {
 		if (roomId) {
 			axios.get("/rooms/sync").then((response) => {
 				for (
 					let index = 0;
-					index < Object.keys(response).length - 2;
+					index < Object.keys(response.data).length;
 					index++
 				) {
 					if (response.data[index]._id === roomId) {
 						setRoomName(response.data[index].name);
+						console.log(response.data[index].name);
 					}
 				}
 			});
 		}
 		setRoomName("");
 	}, [roomId]);
+
+	const timestamp2 = new Date().toUTCString();
 	const [input, setInput] = useState("");
 	const sendMessage = async (e) => {
 		e.preventDefault();
 		await axios.post("/message/new", {
 			message: input,
-			name: user.name,
-			timestamp: "Just Now",
+			name: user.displayName,
+			timestamp: timestamp2,
 			received: false,
 			roomId: roomId,
 		});
 		setInput("");
 	};
+
 	return (
 		<div className="chat">
 			<div className="chat__header">
@@ -77,7 +84,12 @@ function Chat({ messages }) {
 				/>
 				<div className="chat__headerinfo">
 					<h3>{roomName}</h3>
-					<p>last seen</p>
+					<p>
+						last seen at
+						{/* {messages
+							? messages[messages.length - 1]?.timestamp
+							: newMessages[newMessages.length - 1]?.timestamp} */}
+					</p>
 				</div>
 				<div className="chat__headerRight">
 					<IconButton>
@@ -93,16 +105,18 @@ function Chat({ messages }) {
 			</div>
 
 			<div className="chat__body">
-				{messages.map((message) => (
+				{newMessages.map((message) => (
 					<p
 						className={`chat__message ${
-							message.received ? "chat__receiver" : "chat__sender"
+							message.name === user.displayName &&
+							"chat__receiver"
 						}`}
 					>
 						<span className="chat__name">{message.name}</span>
 						{message.message}
 						<span className="chat__timestamp">
-							{new Date().toUTCString()}
+							{message.timestamp}
+							{/* {new Date().toUTCString()} */}
 						</span>
 					</p>
 				))}

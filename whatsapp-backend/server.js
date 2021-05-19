@@ -13,7 +13,6 @@ db.once("open", () => {
 	const roomCollection = db.collection("roomcontents");
 	const changeStream_msg = msgCollection.watch();
 	changeStream_msg.on("change", (change) => {
-		console.log(change);
 		if (change.operationType === "insert") {
 			const messageDetails = change.fullDocument;
 			pusher.trigger("messages", "inserted", {
@@ -28,7 +27,6 @@ db.once("open", () => {
 	});
 	const changeStream_user = userCollection.watch();
 	changeStream_user.on("change", (change) => {
-		console.log(change);
 		if (change.operationType === "insert") {
 			const userDetails = change.fullDocument;
 			pusher.trigger("users", "inserted", {
@@ -42,7 +40,6 @@ db.once("open", () => {
 	});
 	const changeStream_room = roomCollection.watch();
 	changeStream_room.on("change", (change) => {
-		console.log(change);
 		if (change.operationType === "insert") {
 			const roomDetails = change.fullDocument;
 			pusher.trigger("rooms", "inserted", {
@@ -105,7 +102,6 @@ app.post("/user/new", (req, res) => {
 	const dbUser = req.body;
 	userDetails.create(dbUser, (err, data) => {
 		if (err) {
-			console.log(err);
 			res.status(500).send(err);
 		} else {
 			res.status(201).send(`new message created \n ${data}`);
@@ -117,7 +113,6 @@ app.post("/message/new", (req, res) => {
 	const dbMessage = req.body;
 	Messages.create(dbMessage, (err, data) => {
 		if (err) {
-			console.log(err);
 			res.status(500).send(err);
 		} else {
 			res.status(201).send(`new message created \n ${data}`);
@@ -140,6 +135,16 @@ app.get("/messages/sync/:roomId", (req, res) => {
 	});
 });
 
+app.get("/messages/sync", (req, res) => {
+	Messages.find((err, data) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(data);
+		}
+	});
+});
+
 app.get("/rooms/sync", (req, res) => {
 	roomDetails.find((err, data) => {
 		if (err) {
@@ -151,15 +156,12 @@ app.get("/rooms/sync", (req, res) => {
 });
 
 app.post("/room/new", (req, res) => {
-	console.log("hello");
 	const dbRoom = req.body;
-	console.log(dbRoom);
 	roomDetails.create(dbRoom, (err, data) => {
 		if (err) {
-			console.log(err);
 			res.status(500).send(err);
 		} else {
-			res.status(201).send(`new message created \n ${data}`);
+			res.status(201).send(`new room is created \n ${data}`);
 		}
 	});
 });
