@@ -14,7 +14,7 @@
 </div>
 
 <h1 align = 'center'><b>Whatsapp Clone</b></h1> 
-<img src="https://assets.stickpng.com/images/580b57fcd9996e24bc43c543.png" alt="" height=500 width=500>
+<img align = 'center' src="https://assets.stickpng.com/images/580b57fcd9996e24bc43c543.png" alt="" height=500 width=500>
 ## Description ##
 <p>
   I have tried to build a app that can be used by users to chat or converstaions 
@@ -50,16 +50,18 @@ Install the dependencies
 
 #### Execute the code 
 
-```html
+
   Start by clone the git repo 
-  </br>
-  First start the backend part by entering command -> </br>
+  
+  First start the backend part by entering command ->
+  ```html
   - cd whatsapp-backend
   - npm install
   - nodemon server.js
-  
-  </br>
-  Second start the frontend Part by entering following command -> </br>
+  ```
+ 
+  Second start the frontend Part by entering following command ->
+   ```html
   - npm start
 ```
 
@@ -69,8 +71,8 @@ Install the dependencies
 ---
 ### Tech stack
 
-`Frontend` :React JS, HTML, CSS, Javascript <br>
-'MiddleWares':Express,,Pusher
+`Frontend` :React JS, HTML, CSS, Javascript <br> 
+'MiddleWares':Express,,Pusher <br>
 `Backend` : MongoDB,Firebase,NodeJs <br>
 
 ------------------------------------------
